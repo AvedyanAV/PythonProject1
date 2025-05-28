@@ -43,3 +43,29 @@ def test_test_calculate_tax_invalid_tax_rate_below_zero():
 def test_test_calculate_tax_invalid_tax_rate_after_100():
     with pytest.raises(ValueError):
         calculate_tax(100, 1000)
+
+
+@pytest.mark.parametrize('price, tax_rate, discount, expected', [(100, 10, 0, 110.0),
+                                                                 (100, 10, 10, 99.0),
+                                                                 (100, 10, 100, 0.0)])
+def test_test_calculate_tax_discount(price, tax_rate, discount, expected):
+    assert calculate_tax(price, tax_rate, discount) == expected
+
+
+def test_test_calculate_tax_no_discount():
+    assert calculate_tax(100, 10) == 110
+
+
+@pytest.mark.parametrize('round_digits, expected', [(1, 99.4),
+                                                    (2, 99.42),
+                                                    (3, 99.425)])
+def test_test_calculate_tax_round(round_digits, expected):
+    assert calculate_tax(100, 2.5, 3, round_digits) == expected
+
+
+@pytest.mark.parametrize('price, tax_rate, discount, round_digits', [('100', 10, 0, 1),
+                                                                 (100, '10', 10, 1),
+                                                                 (100, 10,'100', 1)])
+def test_test_calculate_tax_wtong_type(price, tax_rate, discount, round_digits):
+    with pytest.raises(TypeError):
+        calculate_tax(price, tax_rate, discount, round_digits)
